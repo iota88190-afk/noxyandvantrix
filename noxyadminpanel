@@ -1,0 +1,335 @@
+-- 🎮 ADMIN PANEL - STEAL A BRAINROT STYLE 🎮
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+pcall(function()
+    player.PlayerGui:FindFirstChild("AdminPanel"):Destroy()
+end)
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "AdminPanel"
+gui.ResetOnSpawn = false
+gui.Parent = player.PlayerGui
+
+-- Frame principal
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 600, 0, 400)
+frame.Position = UDim2.new(0.5, -300, 0.5, -200)
+frame.BackgroundColor3 = Color3.fromRGB(70, 90, 110)
+frame.BorderSizePixel = 0
+frame.Active = true
+frame.Draggable = true
+frame.Parent = gui
+
+-- Bordure rouge
+local border = Instance.new("UIStroke")
+border.Color = Color3.fromRGB(220, 50, 50)
+border.Thickness = 4
+border.Parent = frame
+
+-- Titre
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(0.7, 0, 0, 40)
+title.Position = UDim2.new(0, 10, 0, 5)
+title.BackgroundTransparency = 1
+title.Text = "ADMIN PANEL"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 24
+title.Font = Enum.Font.GothamBold
+title.Parent = frame
+
+-- Bouton X
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0, 40, 0, 40)
+closeBtn.Position = UDim2.new(1, -50, 0, 5)
+closeBtn.BackgroundColor3 = Color3.fromRGB(180, 50, 50)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.white
+closeBtn.TextSize = 20
+closeBtn.Font = Enum.Font.GothamBold
+closeBtn.Parent = frame
+
+-- Zone de commande
+local cmdFrame = Instance.new("Frame")
+cmdFrame.Size = UDim2.new(0.65, 0, 1, -60)
+cmdFrame.Position = UDim2.new(0, 10, 0, 50)
+cmdFrame.BackgroundColor3 = Color3.fromRGB(50, 60, 70)
+cmdFrame.BorderSizePixel = 0
+cmdFrame.Parent = frame
+
+local cmdBorder = Instance.new("UIStroke")
+cmdBorder.Color = Color3.fromRGB(220, 50, 50)
+cmdBorder.Thickness = 2
+cmdBorder.Parent = cmdFrame
+
+-- Type Command
+local cmdLabel = Instance.new("TextLabel")
+cmdLabel.Size = UDim2.new(1, 0, 0, 25)
+cmdLabel.Position = UDim2.new(0, 5, 0, 5)
+cmdLabel.BackgroundTransparency = 1
+cmdLabel.Text = "Type Command"
+cmdLabel.TextColor3 = Color3.white
+cmdLabel.TextSize = 14
+cmdLabel.Font = Enum.Font.Gotham
+cmdLabel.TextXAlignment = Enum.TextXAlignment.Left
+cmdLabel.Parent = cmdFrame
+
+-- Input de commande
+local cmdInput = Instance.new("TextBox")
+cmdInput.Size = UDim2.new(1, -10, 0, 30)
+cmdInput.Position = UDim2.new(0, 5, 0, 30)
+cmdInput.BackgroundColor3 = Color3.fromRGB(40, 50, 60)
+cmdInput.BorderSizePixel = 0
+cmdInput.Text = ""
+cmdInput.PlaceholderText = "Enter command"
+cmdInput.TextColor3 = Color3.white
+cmdInput.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+cmdInput.TextSize = 12
+cmdInput.Font = Enum.Font.Gotham
+cmdInput.Parent = cmdFrame
+
+-- Fonction pour créer un bouton de commande
+local function createCmdButton(icon, text, position, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0.48, 0, 0, 40)
+    btn.Position = position
+    btn.BackgroundColor3 = Color3.fromRGB(40, 50, 60)
+    btn.BorderSizePixel = 0
+    btn.Text = ""
+    btn.Parent = cmdFrame
+
+    local btnBorder = Instance.new("UIStroke")
+    btnBorder.Color = Color3.fromRGB(100, 200, 100)
+    btnBorder.Thickness = 2
+    btnBorder.Parent = btn
+
+    local iconLabel = Instance.new("TextLabel")
+    iconLabel.Size = UDim2.new(0, 30, 1, 0)
+    iconLabel.Position = UDim2.new(0, 5, 0, 0)
+    iconLabel.BackgroundTransparency = 1
+    iconLabel.Text = icon
+    iconLabel.TextColor3 = Color3.white
+    iconLabel.TextSize = 20
+    iconLabel.Font = Enum.Font.Gotham
+    iconLabel.Parent = btn
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Size = UDim2.new(1, -40, 1, 0)
+    textLabel.Position = UDim2.new(0, 35, 0, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = ";" .. text
+    textLabel.TextColor3 = Color3.white
+    textLabel.TextSize = 14
+    textLabel.Font = Enum.Font.Gotham
+    textLabel.TextXAlignment = Enum.TextXAlignment.Left
+    textLabel.Parent = btn
+
+    btn.MouseButton1Click:Connect(callback)
+    return btn
+end
+
+-- Boutons de commandes (comme dans l'image)
+createCmdButton("🚀", "rocket", UDim2.new(0, 5, 0, 70), function()
+    cmdInput.Text = ";rocket"
+end)
+
+createCmdButton("🏃", "ragdoll", UDim2.new(0.52, 0, 0, 70), function()
+    cmdInput.Text = ";ragdoll"
+end)
+
+createCmdButton("🎈", "balloon", UDim2.new(0, 5, 0, 120), function()
+    cmdInput.Text = ";balloon"
+end)
+
+createCmdButton("🔄", "inverse", UDim2.new(0.52, 0, 0, 120), function()
+    cmdInput.Text = ";inverse"
+end)
+
+createCmdButton("👁️", "nightvision", UDim2.new(0, 5, 0, 170), function()
+    cmdInput.Text = ";nightvision"
+end)
+
+createCmdButton("🏢", "jail", UDim2.new(0.52, 0, 0, 170), function()
+    cmdInput.Text = ";jail"
+end)
+
+createCmdButton("🎭", "control", UDim2.new(0, 5, 0, 220), function()
+    cmdInput.Text = ";control"
+end)
+
+createCmdButton("🕷️", "tiny", UDim2.new(0.52, 0, 0, 220), function()
+    cmdInput.Text = ";tiny"
+end)
+
+createCmdButton("👻", "jumpscare", UDim2.new(0, 5, 0, 270), function()
+    cmdInput.Text = ";jumpscare"
+end)
+
+createCmdButton("🧠", "morph", UDim2.new(0.52, 0, 0, 270), function()
+    cmdInput.Text = ";morph"
+end)
+
+-- Liste des joueurs
+local playerFrame = Instance.new("Frame")
+playerFrame.Size = UDim2.new(0.3, 0, 1, -60)
+playerFrame.Position = UDim2.new(0.68, 0, 0, 50)
+playerFrame.BackgroundColor3 = Color3.fromRGB(50, 60, 70)
+playerFrame.BorderSizePixel = 0
+playerFrame.Parent = frame
+
+local playerBorder = Instance.new("UIStroke")
+playerBorder.Color = Color3.fromRGB(220, 50, 50)
+playerBorder.Thickness = 2
+playerBorder.Parent = playerFrame
+
+-- Scroll pour les joueurs
+local playerScroll = Instance.new("ScrollingFrame")
+playerScroll.Size = UDim2.new(1, -10, 1, -10)
+playerScroll.Position = UDim2.new(0, 5, 0, 5)
+playerScroll.BackgroundTransparency = 1
+playerScroll.BorderSizePixel = 0
+playerScroll.ScrollBarThickness = 8
+playerScroll.Parent = playerFrame
+
+-- Fonction pour mettre à jour la liste des joueurs
+local function updatePlayerList()
+    for _, child in pairs(playerScroll:GetChildren()) do
+        if child:IsA("TextButton") then
+            child:Destroy()
+        end
+    end
+
+    local yPos = 0
+    for _, plr in pairs(Players:GetPlayers()) do
+        local playerBtn = Instance.new("TextButton")
+        playerBtn.Size = UDim2.new(1, -10, 0, 30)
+        playerBtn.Position = UDim2.new(0, 0, 0, yPos)
+        playerBtn.BackgroundColor3 = Color3.fromRGB(40, 50, 60)
+        playerBtn.BorderSizePixel = 0
+        playerBtn.Text = plr.Name
+        playerBtn.TextColor3 = Color3.white
+        playerBtn.TextSize = 12
+        playerBtn.Font = Enum.Font.Gotham
+        playerBtn.Parent = playerScroll
+
+        local playerBtnBorder = Instance.new("UIStroke")
+        playerBtnBorder.Color = Color3.fromRGB(100, 100, 100)
+        playerBtnBorder.Thickness = 1
+        playerBtnBorder.Parent = playerBtn
+
+        playerBtn.MouseButton1Click:Connect(function()
+            local currentCmd = cmdInput.Text
+            if currentCmd:find(";") then
+                cmdInput.Text = currentCmd .. " " .. plr.Name
+            end
+        end)
+
+        yPos = yPos + 35
+    end
+
+    playerScroll.CanvasSize = UDim2.new(0, 0, 0, yPos)
+end
+
+-- Variables pour les commandes
+local rocketEnabled = false
+local balloonEnabled = false
+local nightvisionEnabled = false
+
+-- Exécution des commandes
+cmdInput.FocusLost:Connect(function(enterPressed)
+    if enterPressed then
+        local cmd = cmdInput.Text:lower()
+        local char = player.Character
+        if not char then return end
+
+        -- Rocket
+        if cmd:find(";rocket") then
+            if not rocketEnabled then
+                rocketEnabled = true
+                local rocket = Instance.new("Part")
+                rocket.Name = "Rocket"
+                rocket.Size = Vector3.new(2, 6, 2)
+                rocket.Material = Enum.Material.Neon
+                rocket.BrickColor = BrickColor.new("Bright red")
+                rocket.Shape = Enum.PartType.Cylinder
+                rocket.CanCollide = false
+                rocket.Parent = char
+
+                local weld = Instance.new("WeldConstraint")
+                weld.Part0 = char.HumanoidRootPart
+                weld.Part1 = rocket
+                weld.Parent = rocket
+
+                local fire = Instance.new("Fire")
+                fire.Size = 15
+                fire.Heat = 20
+                fire.Parent = rocket
+
+                local bodyVelocity = Instance.new("BodyVelocity")
+                bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+                bodyVelocity.Velocity = Vector3.new(0, 50, 0)
+                bodyVelocity.Parent = char.HumanoidRootPart
+            end
+        end
+
+        -- Balloon
+        if cmd:find(";balloon") then
+            if not balloonEnabled then
+                balloonEnabled = true
+                local balloon = Instance.new("Part")
+                balloon.Name = "Balloon"
+                balloon.Size = Vector3.new(4, 4, 4)
+                balloon.Material = Enum.Material.Neon
+                balloon.BrickColor = BrickColor.new("Bright red")
+                balloon.Shape = Enum.PartType.Ball
+                balloon.CanCollide = false
+                balloon.Parent = char
+
+                local weld = Instance.new("WeldConstraint")
+                weld.Part0 = char.HumanoidRootPart
+                weld.Part1 = balloon
+                weld.Parent = balloon
+
+                local bodyVelocity = Instance.new("BodyVelocity")
+                bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+                bodyVelocity.Velocity = Vector3.new(0, 30, 0)
+                bodyVelocity.Parent = char.HumanoidRootPart
+            end
+        end
+
+        -- Nightvision
+        if cmd:find(";nightvision") then
+            nightvisionEnabled = not nightvisionEnabled
+            game.Lighting.Brightness = nightvisionEnabled and 2 or 1
+        end
+
+        -- Ragdoll
+        if cmd:find(";ragdoll") then
+            if char:FindFirstChild("Humanoid") then
+                char.Humanoid.PlatformStand = true
+                for _, joint in pairs(char:GetDescendants()) do
+                    if joint:IsA("Motor6D") then
+                        joint:Destroy()
+                    end
+                end
+            end
+        end
+
+        cmdInput.Text = ""
+    end
+end)
+
+-- Events
+closeBtn.MouseButton1Click:Connect(function()
+    gui:Destroy()
+end)
+
+-- Mise à jour initiale
+updatePlayerList()
+
+-- Mise à jour quand un joueur rejoint/quitte
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
+
+print("🎮 ADMIN PANEL LOADED!")
+print("📝 Type commands or click buttons!")
