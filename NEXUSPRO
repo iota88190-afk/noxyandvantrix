@@ -1,0 +1,499 @@
+-- NOXY AND VANTRIX ADMIN PANEL
+-- Key System
+local validKeys = {"noxyleboss", "9AJD8IYBZ9SUZ19DV1B8YVZ9UB8"}
+local keyEntered = false
+
+-- Services
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Key System GUI
+local function createKeySystem()
+    local keyGui = Instance.new("ScreenGui")
+    keyGui.Name = "NoxyKeySystem"
+    keyGui.ResetOnSpawn = false
+    keyGui.Parent = playerGui
+
+    local keyFrame = Instance.new("Frame")
+    keyFrame.Size = UDim2.new(0, 300, 0, 200)
+    keyFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+    keyFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    keyFrame.BorderSizePixel = 2
+    keyFrame.BorderColor3 = Color3.new(1, 0, 0)
+    keyFrame.Parent = keyGui
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 50)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = "NOXY AND VANTRIX"
+    title.TextColor3 = Color3.new(1, 0, 0)
+    title.TextScaled = true
+    title.Font = Enum.Font.GothamBold
+    title.Parent = keyFrame
+
+    local keyBox = Instance.new("TextBox")
+    keyBox.Size = UDim2.new(0.8, 0, 0, 40)
+    keyBox.Position = UDim2.new(0.1, 0, 0.4, 0)
+    keyBox.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+    keyBox.BorderColor3 = Color3.new(1, 0, 0)
+    keyBox.Text = "Enter Key..."
+    keyBox.TextColor3 = Color3.new(1, 1, 1)
+    keyBox.TextScaled = true
+    keyBox.Font = Enum.Font.Gotham
+    keyBox.Parent = keyFrame
+
+    local submitBtn = Instance.new("TextButton")
+    submitBtn.Size = UDim2.new(0.6, 0, 0, 40)
+    submitBtn.Position = UDim2.new(0.2, 0, 0.7, 0)
+    submitBtn.BackgroundColor3 = Color3.new(1, 0, 0)
+    submitBtn.BorderSizePixel = 0
+    submitBtn.Text = "SUBMIT"
+    submitBtn.TextColor3 = Color3.new(1, 1, 1)
+    submitBtn.TextScaled = true
+    submitBtn.Font = Enum.Font.GothamBold
+    submitBtn.Parent = keyFrame
+
+    submitBtn.MouseButton1Click:Connect(function()
+        local enteredKey = keyBox.Text
+        for _, validKey in pairs(validKeys) do
+            if enteredKey == validKey then
+                keyEntered = true
+                keyGui:Destroy()
+                createAdminPanel()
+                return
+            end
+        end
+        keyBox.Text = "Invalid Key!"
+        wait(2)
+        keyBox.Text = "Enter Key..."
+    end)
+end
+
+-- Admin Panel Functions
+local selectedPlayer = nil
+
+local function getPlayerFromName(name)
+    for _, p in pairs(Players:GetPlayers()) do
+        if string.lower(p.Name):find(string.lower(name)) or string.lower(p.DisplayName):find(string.lower(name)) then
+            return p
+        end
+    end
+    return nil
+end
+
+-- Command Functions
+local function rocketPlayer(targetPlayer)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+        bodyVelocity.Velocity = Vector3.new(0, 100, 0)
+        bodyVelocity.Parent = targetPlayer.Character.HumanoidRootPart
+        
+        game:GetService("Debris"):AddItem(bodyVelocity, 3)
+    end
+end
+
+local function ragdollPlayer(targetPlayer)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+        targetPlayer.Character.Humanoid.PlatformStand = true
+        for _, part in pairs(targetPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+        
+        wait(5)
+        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+            targetPlayer.Character.Humanoid.PlatformStand = false
+            for _, part in pairs(targetPlayer.Character:GetChildren()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+end
+
+local function balloonPlayer(targetPlayer)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Head") then
+        local balloon = Instance.new("Part")
+        balloon.Name = "Balloon"
+        balloon.Size = Vector3.new(4, 4, 4)
+        balloon.Shape = Enum.PartType.Ball
+        balloon.Material = Enum.Material.Neon
+        balloon.BrickColor = BrickColor.new("Bright red")
+        balloon.CanCollide = false
+        balloon.Parent = targetPlayer.Character
+        
+        local weld = Instance.new("WeldConstraint")
+        weld.Part0 = balloon
+        weld.Part1 = targetPlayer.Character.Head
+        weld.Parent = balloon
+        
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.MaxForce = Vector3.new(4000, 4000, 4000)
+        bodyVelocity.Velocity = Vector3.new(0, 20, 0)
+        bodyVelocity.Parent = targetPlayer.Character.HumanoidRootPart
+        
+        game:GetService("Debris"):AddItem(balloon, 15)
+        game:GetService("Debris"):AddItem(bodyVelocity, 15)
+    end
+end
+
+local function inversePlayer(targetPlayer)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+        local humanoid = targetPlayer.Character.Humanoid
+        local originalWalkSpeed = humanoid.WalkSpeed
+        
+        -- Inverse controls simulation
+        local connection
+        connection = RunService.Heartbeat:Connect(function()
+            if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local moveVector = humanoid.MoveDirection
+                if moveVector.Magnitude > 0 then
+                    targetPlayer.Character.HumanoidRootPart.Velocity = Vector3.new(-moveVector.X * 16, targetPlayer.Character.HumanoidRootPart.Velocity.Y, -moveVector.Z * 16)
+                end
+            end
+        end)
+        
+        wait(10)
+        connection:Disconnect()
+    end
+end
+
+local function nightvisionPlayer(targetPlayer)
+    if targetPlayer == player then
+        game.Lighting.Brightness = 2
+        game.Lighting.Ambient = Color3.new(1, 1, 1)
+        
+        wait(60)
+        game.Lighting.Brightness = 1
+        game.Lighting.Ambient = Color3.new(0.5, 0.5, 0.5)
+    end
+end
+
+local function jailPlayer(targetPlayer)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local jail = Instance.new("Part")
+        jail.Name = "Jail"
+        jail.Size = Vector3.new(8, 8, 8)
+        jail.Material = Enum.Material.ForceField
+        jail.BrickColor = BrickColor.new("Really black")
+        jail.CanCollide = true
+        jail.Anchored = true
+        jail.Position = targetPlayer.Character.HumanoidRootPart.Position
+        jail.Parent = workspace
+        
+        targetPlayer.Character.HumanoidRootPart.Anchored = true
+        
+        wait(10)
+        if jail then jail:Destroy() end
+        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            targetPlayer.Character.HumanoidRootPart.Anchored = false
+        end
+    end
+end
+
+local function controlPlayer(targetPlayer)
+    if targetPlayer and targetPlayer ~= player and targetPlayer.Character then
+        -- Basic control simulation
+        print("Controlling " .. targetPlayer.Name .. " for 10 seconds")
+        wait(10)
+        print("Control ended")
+    end
+end
+
+local function tinyPlayer(targetPlayer)
+    if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+        local humanoid = targetPlayer.Character.Humanoid
+        humanoid.HipHeight = humanoid.HipHeight * 0.1
+        
+        for _, part in pairs(targetPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") then
+                part.Size = part.Size * 0.1
+            end
+        end
+        
+        wait(30)
+        
+        if targetPlayer.Character and targetPlayer.Character:FindFirstChild("Humanoid") then
+            humanoid.HipHeight = humanoid.HipHeight * 10
+            for _, part in pairs(targetPlayer.Character:GetChildren()) do
+                if part:IsA("BasePart") then
+                    part.Size = part.Size * 10
+                end
+            end
+        end
+    end
+end
+
+local function jumpscarePlayer(targetPlayer)
+    if targetPlayer == player then
+        local jumpscareGui = Instance.new("ScreenGui")
+        jumpscareGui.Name = "Jumpscare"
+        jumpscareGui.Parent = playerGui
+        
+        local jumpscareFrame = Instance.new("Frame")
+        jumpscareFrame.Size = UDim2.new(1, 0, 1, 0)
+        jumpscareFrame.Position = UDim2.new(0, 0, 0, 0)
+        jumpscareFrame.BackgroundColor3 = Color3.new(1, 0, 0)
+        jumpscareFrame.Parent = jumpscareGui
+        
+        local jumpscareText = Instance.new("TextLabel")
+        jumpscareText.Size = UDim2.new(1, 0, 1, 0)
+        jumpscareText.BackgroundTransparency = 1
+        jumpscareText.Text = "BRAINROT JUMPSCARE!"
+        jumpscareText.TextColor3 = Color3.new(0, 0, 0)
+        jumpscareText.TextScaled = true
+        jumpscareText.Font = Enum.Font.GothamBold
+        jumpscareText.Parent = jumpscareFrame
+        
+        wait(2)
+        jumpscareGui:Destroy()
+    end
+end
+
+local function morphPlayer(targetPlayer)
+    if targetPlayer and targetPlayer.Character then
+        -- Simple morph effect
+        for _, part in pairs(targetPlayer.Character:GetChildren()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.BrickColor = BrickColor.Random()
+            end
+        end
+        
+        wait(30)
+        
+        if targetPlayer.Character then
+            for _, part in pairs(targetPlayer.Character:GetChildren()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.BrickColor = BrickColor.new("Light stone grey")
+                end
+            end
+        end
+    end
+end
+
+-- Create Admin Panel
+local function createAdminPanel()
+    local adminGui = Instance.new("ScreenGui")
+    adminGui.Name = "NoxyAdminPanel"
+    adminGui.ResetOnSpawn = false
+    adminGui.Parent = playerGui
+
+    -- Main Frame
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 600, 0, 400)
+    mainFrame.Position = UDim2.new(0.5, -300, 0.5, -200)
+    mainFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    mainFrame.BorderSizePixel = 2
+    mainFrame.BorderColor3 = Color3.new(1, 0, 0)
+    mainFrame.Parent = adminGui
+
+    -- Title
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+    title.BorderSizePixel = 0
+    title.Text = "ADMIN PANEL"
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.TextScaled = true
+    title.Font = Enum.Font.GothamBold
+    title.Parent = mainFrame
+
+    -- Close Button
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 30, 0, 30)
+    closeBtn.Position = UDim2.new(1, -35, 0, 5)
+    closeBtn.BackgroundColor3 = Color3.new(1, 0, 0)
+    closeBtn.BorderSizePixel = 0
+    closeBtn.Text = "X"
+    closeBtn.TextColor3 = Color3.new(1, 1, 1)
+    closeBtn.TextScaled = true
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.Parent = mainFrame
+
+    closeBtn.MouseButton1Click:Connect(function()
+        adminGui:Destroy()
+    end)
+
+    -- Command Input
+    local commandFrame = Instance.new("Frame")
+    commandFrame.Size = UDim2.new(0.6, 0, 0, 60)
+    commandFrame.Position = UDim2.new(0.02, 0, 0.12, 0)
+    commandFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+    commandFrame.BorderColor3 = Color3.new(1, 0, 0)
+    commandFrame.BorderSizePixel = 1
+    commandFrame.Parent = mainFrame
+
+    local commandLabel = Instance.new("TextLabel")
+    commandLabel.Size = UDim2.new(1, 0, 0, 20)
+    commandLabel.Position = UDim2.new(0, 0, 0, 0)
+    commandLabel.BackgroundTransparency = 1
+    commandLabel.Text = "Type Command"
+    commandLabel.TextColor3 = Color3.new(1, 1, 1)
+    commandLabel.TextScaled = true
+    commandLabel.Font = Enum.Font.Gotham
+    commandLabel.Parent = commandFrame
+
+    local commandBox = Instance.new("TextBox")
+    commandBox.Size = UDim2.new(1, -10, 0, 30)
+    commandBox.Position = UDim2.new(0, 5, 0, 25)
+    commandBox.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    commandBox.BorderColor3 = Color3.new(0.5, 0.5, 0.5)
+    commandBox.Text = "Enter command"
+    commandBox.TextColor3 = Color3.new(0.7, 0.7, 0.7)
+    commandBox.TextScaled = true
+    commandBox.Font = Enum.Font.Gotham
+    commandBox.Parent = commandFrame
+
+    -- Command Buttons
+    local commands = {
+        {name = "rocket", icon = "🚀", func = rocketPlayer},
+        {name = "ragdoll", icon = "🤸", func = ragdollPlayer},
+        {name = "balloon", icon = "🎈", func = balloonPlayer},
+        {name = "inverse", icon = "🔄", func = inversePlayer},
+        {name = "nightvision", icon = "👁", func = nightvisionPlayer},
+        {name = "jail", icon = "🔒", func = jailPlayer},
+        {name = "control", icon = "🎮", func = controlPlayer},
+        {name = "tiny", icon = "🐜", func = tinyPlayer},
+        {name = "jumpscare", icon = "👻", func = jumpscarePlayer},
+        {name = "morph", icon = "🧠", func = morphPlayer}
+    }
+
+    for i, cmd in pairs(commands) do
+        local row = math.floor((i - 1) / 2)
+        local col = (i - 1) % 2
+        
+        local cmdBtn = Instance.new("TextButton")
+        cmdBtn.Size = UDim2.new(0.28, 0, 0, 50)
+        cmdBtn.Position = UDim2.new(0.02 + col * 0.3, 0, 0.35 + row * 0.15, 0)
+        cmdBtn.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+        cmdBtn.BorderColor3 = Color3.new(0.8, 0.8, 0)
+        cmdBtn.BorderSizePixel = 1
+        cmdBtn.Text = cmd.icon .. " ;" .. cmd.name
+        cmdBtn.TextColor3 = Color3.new(1, 1, 1)
+        cmdBtn.TextScaled = true
+        cmdBtn.Font = Enum.Font.Gotham
+        cmdBtn.Parent = mainFrame
+
+        cmdBtn.MouseButton1Click:Connect(function()
+            if selectedPlayer then
+                cmd.func(selectedPlayer)
+            end
+        end)
+    end
+
+    -- Player List
+    local playerListFrame = Instance.new("Frame")
+    playerListFrame.Size = UDim2.new(0.35, 0, 0.75, 0)
+    playerListFrame.Position = UDim2.new(0.63, 0, 0.12, 0)
+    playerListFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+    playerListFrame.BorderColor3 = Color3.new(1, 0, 0)
+    playerListFrame.BorderSizePixel = 1
+    playerListFrame.Parent = mainFrame
+
+    local playerListScroll = Instance.new("ScrollingFrame")
+    playerListScroll.Size = UDim2.new(1, 0, 1, 0)
+    playerListScroll.BackgroundTransparency = 1
+    playerListScroll.ScrollBarThickness = 5
+    playerListScroll.Parent = playerListFrame
+
+    -- Update Player List
+    local function updatePlayerList()
+        for _, child in pairs(playerListScroll:GetChildren()) do
+            if child:IsA("TextButton") then
+                child:Destroy()
+            end
+        end
+
+        local yPos = 0
+        for _, p in pairs(Players:GetPlayers()) do
+            local playerBtn = Instance.new("TextButton")
+            playerBtn.Size = UDim2.new(1, -10, 0, 30)
+            playerBtn.Position = UDim2.new(0, 5, 0, yPos)
+            playerBtn.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+            playerBtn.BorderSizePixel = 0
+            playerBtn.Text = p.Name
+            playerBtn.TextColor3 = Color3.new(1, 1, 1)
+            playerBtn.TextScaled = true
+            playerBtn.Font = Enum.Font.Gotham
+            playerBtn.Parent = playerListScroll
+
+            playerBtn.MouseButton1Click:Connect(function()
+                selectedPlayer = p
+                for _, btn in pairs(playerListScroll:GetChildren()) do
+                    if btn:IsA("TextButton") then
+                        btn.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+                    end
+                end
+                playerBtn.BackgroundColor3 = Color3.new(0, 0.5, 0)
+            end)
+
+            yPos = yPos + 35
+        end
+        
+        playerListScroll.CanvasSize = UDim2.new(0, 0, 0, yPos)
+    end
+
+    -- Command Processing
+    commandBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            local command = string.lower(commandBox.Text)
+            commandBox.Text = "Enter command"
+            
+            if selectedPlayer then
+                for _, cmd in pairs(commands) do
+                    if command:find(";" .. cmd.name) then
+                        cmd.func(selectedPlayer)
+                        break
+                    end
+                end
+            end
+        end
+    end)
+
+    -- Initial player list update
+    updatePlayerList()
+    
+    -- Update player list when players join/leave
+    Players.PlayerAdded:Connect(updatePlayerList)
+    Players.PlayerRemoving:Connect(updatePlayerList)
+
+    -- Make draggable
+    local dragging = false
+    local dragStart = nil
+    local startPos = nil
+
+    title.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+            dragStart = input.Position
+            startPos = mainFrame.Position
+        end
+    end)
+
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local delta = input.Position - dragStart
+            mainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+
+    UserInputService.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+end
+
+-- Start with key system
+createKeySystem()
